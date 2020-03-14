@@ -2,6 +2,14 @@ import React, { Component } from "react";
 import { View, Form, Item, Label, Text, Button, Input } from "native-base";
 import { StyleSheet } from "react-native";
 import { validateField } from "../../validator/validationService";
+import ValidationError from "../ValidationError";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { delearLoginAction } from "../../actions/action";
+import { userService } from "../../services";
+import Loader from "../loader";
+import AlertComponent from "../alert";
+
 
 class DealerLoginComponet extends Component {
 
@@ -9,7 +17,9 @@ class DealerLoginComponet extends Component {
         super(props);
         this.state = {
             email: "",
-            password: ""
+            emailError: "",
+            password: "",
+            passwordError: "",
         }
     }
 
@@ -19,15 +29,44 @@ class DealerLoginComponet extends Component {
         const email = validateField('email', this.state.email);
         const password = validateField('password', this.state.password);
 
+        this.setState({
+            emailError: email,
+            passwordError: password
+        })
+
         if(!email && !password) {
-            alert("correct");
+            const user_info = {
+                email: this.state.email,
+                password: this.state.password
+            };
+            this.props.login(
+                user_info
+            );
         }
+    }
+
+    _handleEmailChange = email => {
+        this.setState( {email } )
+    }
+
+    _handlePasswordChange = password => {
+        this.setState( {password} )
     }
 
     render() {
         const { navigate } = this.props.navigation;
+        let emailValidationError;
+        let passwordValidationError
+        if ( this.state.emailError ) {
+            emailValidationError = <ValidationError Error = { this.state.emailError } />
+        }
+        if ( this.state.passwordError ) {
+            passwordValidationError = <ValidationError Error = { this.state.passwordError } />
+        }
         return (
             <View style = { styles.container }>
+                <Loader loadingState = { this.props.loaderState } />
+                <AlertComponent alertState = { this.props.alertState } />
                 <View style = { styles.headerView }>
                     <Text style = { styles.headerText }>Login</Text>
                 </View>
@@ -35,21 +74,32 @@ class DealerLoginComponet extends Component {
                     <Item floatingLabel>
                         <Label>Email</Label>
                         <Input
-                            onChangeText = { (text) => this.setState({ email: text })}
+                            onChangeText = { this._handleEmailChange }
                             value = { this.state.email }
-                            // onBlur =
+                            autoCapitalize = 'none'
+                            onBlur = { () => {
+                                this.setState( {
+                                    emailError: validateField('email', this.state.email)
+                                })
+                            }}
                         />
                     </Item>
-                    <Text value = { this.state }></Text>
+                    <View>{ emailValidationError }</View>
                     <Item floatingLabel>
                         <Label>Password</Label>
                         <Input 
                             secureTextEntry = { true }
-                            onChangeText = { (password) => this.setState({ password })}
-                            value = { this.state.password }
+                            onChangeText = { this._handlePasswordChange }
+                            onBlur = { () => {
+                                this.setState( {
+                                    passwordError: validateField('password', this.state.password)
+                                })
+                            }}
+                            autoCapitalize = 'none'
                         />
                     </Item>
-                    <Button style = { styles.loginButton } onPress = { this._onSubmit }>
+                    <View>{ passwordValidationError }</View>
+                    <Button style = { styles.loginButton } onPress = { this._onSubmit.bind(this) }>
                         <Text>Login</Text>
                     </Button>
                 </Form>
@@ -69,10 +119,18 @@ class DealerLoginComponet extends Component {
 }
 
 // This function maps the state to the components prop.
-// const mapStateToProps = (state) => {
-//     const { delearState } = state;
-//     return { delearState };
-// }
+const mapStateToProps = (state) => {
+    //console.log("state",state);
+    return { 
+        dealerState:state.dealerState,
+        loaderState:state.loaderState,
+        alertState:state.alertState
+    };
+};
+
+const mapDispatchToProps = dispatch => ({
+    login: user_info => dispatch(delearLoginAction.login(user_info.email, user_info.password))
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -96,4 +154,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default DealerLoginComponet;
+export default connect(mapStateToProps, mapDispatchToProps)(DealerLoginComponet);

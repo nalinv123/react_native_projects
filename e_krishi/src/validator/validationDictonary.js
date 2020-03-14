@@ -8,4 +8,10 @@ export const validationDictionary = {
             message: "^Email address must be valid"
         }
     },
+    password: {
+        presence: {
+            allowEmpty: false,
+            message: "^This is required"
+        }
+    }
 }

@@ -1,8 +1,8 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import React, { Component } from 'react';
-import { createStore } from 'redux';
-import reducer from './src/reducer/reducer';
+import { createStore, compose, applyMiddleware } from 'redux';
+import rootReducer from './src/reducer/index';
 import { Provider } from 'react-redux';
 import MainComponent from './src/component/Main';
 import SearchComponet from './src/component/Farmer/Search';
@@ -10,6 +10,7 @@ import DealerLoginComponet from './src/component/Dealer/Login';
 import DealerRegisterComponent from './src/component/Dealer/Register';
 import SearchResultsComponent from './src/component/Farmer/SearchResults';
 import DealerHome from './src/component/Dealer/Home';
+import thunk from 'redux-thunk';
 
 const AppNavigator = createStackNavigator({
   Main: {
@@ -33,7 +34,10 @@ const AppNavigator = createStackNavigator({
   initialRouteName: 'Main'
 });
 
-const store = createStore(reducer);
+let middleware = [];
+middleware = [...middleware, thunk];
+
+const store = createStore(rootReducer, compose(applyMiddleware(...middleware)));
 
 const AppContainer = createAppContainer(AppNavigator);
 
