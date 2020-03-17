@@ -5,7 +5,7 @@ import { validateField } from "../../validator/validationService";
 import ValidationError from "../ValidationError";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { delearLoginAction } from "../../actions/action";
+import { delearAction } from "../../actions/action";
 import { userService } from "../../services";
 import Loader from "../loader";
 import AlertComponent from "../alert";
@@ -129,7 +129,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-    login: user_info => dispatch(delearLoginAction.login(user_info.email, user_info.password))
+    login: user_info => dispatch(delearAction.login(user_info.email, user_info.password))
 });
 
 const styles = StyleSheet.create({

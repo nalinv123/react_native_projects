@@ -1,4 +1,4 @@
-import { SERVICE_SUCCESS, SERVICE_FAIL, HIDE_ALERT } from "../actions/actiontypes"
+import { HIDE_ALERT, SERVICE_ERROR, SERVICE_SUCCESS_RESPONSE, SERVICE_FAIL_RESPONSE, SHOW_REGISTRATION_SUCCESS } from "../actions/actiontypes"
 
 const INITIAL_STATE = {
     isAlert: false,
@@ -9,8 +9,23 @@ const INITIAL_STATE = {
 
 export function alertState(state = INITIAL_STATE, action) {
     switch(action.type) {
-        case SERVICE_SUCCESS:
-        case SERVICE_FAIL:
+        case SERVICE_SUCCESS_RESPONSE:
+        case SHOW_REGISTRATION_SUCCESS:
+            return Object.assign({}, state, {
+                isAlert: true,
+                title: "Success",
+                message: action.payload.response,
+                confirmText: "Okay"
+            });
+        case SERVICE_FAIL_RESPONSE:
+            console.log(action);
+            return Object.assign({}, state, {
+                isAlert: true,
+                title: "Sorry",
+                message: action.payload.response,
+                confirmText: "Okay"
+            });
+        case SERVICE_ERROR:
             return Object.assign({}, state, {
                 isAlert: true,
                 title: "Sorry",
@@ -23,7 +38,7 @@ export function alertState(state = INITIAL_STATE, action) {
                 title: "",
                 message: "",
                 confirmText: ""
-            })
+            });
         default:
             return state;
     }

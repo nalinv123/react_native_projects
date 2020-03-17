@@ -12,6 +12,35 @@ export const validationDictionary = {
         presence: {
             allowEmpty: false,
             message: "^This is required"
+        },
+        length: {
+            minimum: 6,
+            maximum: 20
+        }
+    },
+    name: {
+        presence: {
+            allowEmpty: false,
+            message: "^This is required"
+        }
+    },
+    city: {
+        presence: {
+            allowEmpty: false,
+            message: "^This is required"
+        }
+    },
+    mobile: {
+        presence: {
+            allowEmpty: false,
+            message: "^This is required"
+        },
+        length: {
+            minimum: 10,
+            maximum: 10
+        },
+        format: {
+            pattern: "\\d{10}"
         }
     }
 }

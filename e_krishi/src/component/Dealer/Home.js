@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, Container, Footer, FooterTab, Button, Content, Header, Tabs, Tab, TabHeading } from "native-base";
+import { Text, Container, Footer, FooterTab, Button, Content, Header, Tabs, Tab, TabHeading, View } from "native-base";
 import { StyleSheet } from "react-native";
 import DealerVegetables from "./Vegetables";
 import DealerProfile from "./Profile";
@@ -22,6 +22,9 @@ class DealerHome extends Component {
     render() {
         return (
             <Container>
+                <View>
+                    <Text> { this.props.dealer.email } </Text>
+                </View>
                 <Header style = { styles.tabHeader } hasTabs />
                 <Tabs>
                     <Tab heading = { <TabHeading><FontAwesomeIcon icon={ faSeedling } size = { 25 } /><Text>Vegetables</Text></TabHeading>}>
@@ -42,5 +45,10 @@ const styles = StyleSheet.create({
         marginTop: 0
     }
 });
+
+const mapStateToProps = (state) => {
+    const { dealer } = state;
+    return { dealer };
+}
 
 export default DealerHome;

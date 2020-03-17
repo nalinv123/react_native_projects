@@ -1,4 +1,4 @@
-import { SERVICE_SUCCESS, SERVICE_FAIL, SERVICE_PENDING } from "../actions/actiontypes";
+import { SERVICE_SUCCESS, SERVICE_FAIL, SERVICE_PENDING, SERVICE_ERROR } from "../actions/actiontypes";
 
 const INITIAL_STATE = {
     dealer: {
@@ -19,15 +19,9 @@ export function dealerState (state = INITIAL_STATE, action) {
     switch(action.type) {
         case SERVICE_PENDING:
         case SERVICE_SUCCESS:
-        case SERVICE_FAIL:
-            const {
-                dealer,
-                farmer,
-                isLoading
-            } = state
-
-            const newState = { dealer, farmer, isLoading }
-            return newState;
+            
+        case SERVICE_ERROR:
+            return state;
         default :
             return state;
     }
