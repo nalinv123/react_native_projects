@@ -1,10 +1,7 @@
-import { SERVICE_SUCCESS, SERVICE_FAIL, SERVICE_PENDING, SERVICE_ERROR } from "../actions/actiontypes";
+import { SERVICE_FAIL, SERVICE_PENDING, SERVICE_ERROR, SERVICE_SUCCESS_RESPONSE, LOGOUT_SUCCESS } from "../actions/actiontypes";
 
 const INITIAL_STATE = {
-    dealer: {
-        email: "",
-        name: "",
-        mobile: ""
+    dealer: {   
     },
 };
 
@@ -16,10 +13,21 @@ const INITIAL_STATE = {
 } */
 
 export function dealerState (state = INITIAL_STATE, action) {
+    console.log("action after logout",action.payload)
+    // const name = (action.payload || {}).token;
+    // console.log("name : ", name)
     switch(action.type) {
         case SERVICE_PENDING:
-        case SERVICE_SUCCESS:
-            
+        case SERVICE_SUCCESS_RESPONSE:
+            return { ...state,
+                dealer: action.payload
+            };
+        case LOGOUT_SUCCESS:
+            console.log("logout success action");
+            return {
+                ...state,
+                dealer: null
+            }
         case SERVICE_ERROR:
             return state;
         default :

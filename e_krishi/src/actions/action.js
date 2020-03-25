@@ -1,11 +1,13 @@
 import { userService } from "../services/"
-import config, { loginUrl, registerUrl } from "../config/config"
-import { SERVICE_SUCCESS, SERVICE_FAIL, SERVICE_PENDING, HIDE_ALERT, SERVICE_ERROR, SERVICE_SUCCESS_RESPONSE, SERVICE_FAIL_RESPONSE, SHOW_REGISTRATION_SUCCESS } from "./actiontypes";
+import { loginUrl, registerUrl, getDealerVegetablesUrl, logoutUrl } from "../config/config"
+import { SERVICE_PENDING, HIDE_ALERT, SERVICE_ERROR, SERVICE_SUCCESS_RESPONSE, SERVICE_FAIL_RESPONSE, SHOW_REGISTRATION_SUCCESS, LOGOUT_SUCCESS } from "./actiontypes";
+import AsyncStorage from "@react-native-community/async-storage";
 
 export const delearAction = {
     login,
-    register
-    // logout
+    register,
+    getDealerVegetables,
+    logout
 }
 
 function login(email,password){
@@ -21,9 +23,13 @@ function login(email,password){
         };
 
         userService.POST(apiendpoint,header,payload)
-        .then(respose=>{
-            if (respose.data.status) {
-                console.log(respose.data.token);
+        .then(response=>{
+            if (response.data.status) {
+                // console.log(response.data);
+                // dispatch(NavigationActions.navigate({
+                //     routeName: 'DealerHome'
+                // }));
+                dispatch(showSuccessResponse(response.data));
             } else {
                 dispatch(showFailureResponse(respose.data));
             }
@@ -46,7 +52,7 @@ function register(dealerInfo) {
         userService.POST(apiendpoint, header, payload)
             .then(response => {
                 if (response.data.status) {
-                    console.log(response.data.status);
+                    //console.log(response.data);
                     dispatch(showRegistrationSuccess(response.data));
                 }
                 else {
@@ -55,9 +61,56 @@ function register(dealerInfo) {
                 }
             })
             .catch(error => {
+                
                 dispatch(showError(error))
             })
         console.log("In register action dealer info : ", dealerInfo);
+    }
+}
+
+function getDealerVegetables(email, token) {
+    return dispatch => {
+        dispatch(serviceActionPending);
+        //setTimeout(5);
+        //onsole.log(token);
+        let apiendpoint = getDealerVegetablesUrl;
+        let payload = email;
+        let header = {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " + token
+        };
+        userService.POST(apiendpoint, header, payload)
+            .then(response => {
+                if (response.message.includes("401")) {
+                    console.log("heelo")
+                    dispatch(logout());
+                }
+            })
+            .catch(error => {
+                console.log("error :" ,error)
+                dispatch(showError(error));
+            });
+        //dispatch(showSuccessResponse);
+    }
+}
+
+function logout() {
+    return dispatch => {
+        dispatch(serviceActionPending);
+        let apiendpoint = logoutUrl;
+
+        userService.GET(apiendpoint, null)
+            .then(response => {
+                // console.log(response.data);
+                if (response.data === "Logout Successful") {
+                    console.log(response.data);
+                    AsyncStorage.removeItem('dealer');
+                    dispatch(showLogoutSuccess(response.data));
+                }
+            })
+            .catch(error => {
+                dispatch(showError(error));
+            })
     }
 }
 
@@ -97,6 +150,13 @@ export function hideAlert() {
 export function showRegistrationSuccess(response) {
     return {
         type: SHOW_REGISTRATION_SUCCESS,
+        payload: response
+    }
+}
+
+export function showLogoutSuccess(response) {
+    return {
+        type: LOGOUT_SUCCESS,
         payload: response
     }
 }

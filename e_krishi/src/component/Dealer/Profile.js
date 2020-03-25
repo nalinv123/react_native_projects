@@ -1,18 +1,49 @@
 import React, { Component } from "react";
 import { View, Text, Content } from "native-base";
 import { StyleSheet, Image } from "react-native";
+import { connect } from "react-redux";
+import AsyncStorage from "@react-native-community/async-storage";
 
 class DealerProfile extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      dealer: {}
+    }
+  }
+
+  UNSAFE_componentWillMount() {
+    AsyncStorage.getItem('dealer', (error, result) => {
+      if (result)
+      {
+          //console.log("In will mount : ", JSON.parse(result));
+          const dealer = JSON.parse(result);
+          if (dealer && dealer.token) {
+              // this.props.navigation.navigate('DealerHome');
+              this.setState({
+                dealer: dealer
+              })
+          }
+      } else {
+        this.props.navigation.navigate('DealerLogin');
+      }
+  });
+  }
+
     render() {
+      //console.log("props dealer profile : ", this.state.dealer.dealer /* this.props.dealerState.dealer.dealer */);
+      const name = (this.state.dealer.dealer || {}).name;
+      const email = (this.state.dealer.dealer || {}).email;
+      const mobile = (this.state.dealer.dealer || {}).mobile;
         return (
             <View style={styles.header}>
             <View style={styles.headerContent}>
                 <Image style={styles.avatar}
                   source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
-
-                <Text style={styles.name}>John Doe </Text>
-                <Text style={styles.userInfo}>jhonnydoe@mail.com </Text>
-                <Text style={styles.userInfo}>Florida </Text>
+                <Text style={styles.name}>{ name }</Text>
+                <Text style={styles.userInfo}>{ email }</Text>
+                <Text style={styles.userInfo}>{ mobile }</Text>
             </View>
           </View>
         );
@@ -75,4 +106,10 @@ const styles = StyleSheet.create({
       }
 })
 
-export default DealerProfile;
+const mapStateToProps = (state) => {
+  return {
+    dealerState: state.dealerState
+  };
+}
+
+export default connect(mapStateToProps) (DealerProfile);

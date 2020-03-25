@@ -10,6 +10,10 @@ const INITIAL_STATE = {
 export function alertState(state = INITIAL_STATE, action) {
     switch(action.type) {
         case SERVICE_SUCCESS_RESPONSE:
+            return{
+                ...state,
+                isAlert:false
+            }
         case SHOW_REGISTRATION_SUCCESS:
             return Object.assign({}, state, {
                 isAlert: true,
@@ -18,7 +22,7 @@ export function alertState(state = INITIAL_STATE, action) {
                 confirmText: "Okay"
             });
         case SERVICE_FAIL_RESPONSE:
-            console.log(action);
+            //console.log(action);
             return Object.assign({}, state, {
                 isAlert: true,
                 title: "Sorry",

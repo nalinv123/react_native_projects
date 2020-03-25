@@ -9,6 +9,7 @@ import { delearAction } from "../../actions/action";
 import { userService } from "../../services";
 import Loader from "../loader";
 import AlertComponent from "../alert";
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 class DealerLoginComponet extends Component {
@@ -21,6 +22,23 @@ class DealerLoginComponet extends Component {
             password: "",
             passwordError: "",
         }
+    }
+
+    UNSAFE_componentWillMount() {
+        AsyncStorage.getItem('dealer', (error, result) => {
+            if (result)
+            {
+                //console.log("In will mount : ", JSON.parse(result));
+                const dealer = JSON.parse(result);
+                if (dealer && dealer.token) {
+                    this.props.navigation.navigate('DealerHome');
+                }
+            }
+        });
+        
+        // if (dealer && dealer.token) {
+        //     this.props.navigation.navigate('DealerHome');
+        // }
     }
 
     _onSubmit() {
@@ -43,6 +61,18 @@ class DealerLoginComponet extends Component {
                 user_info
             );
         }
+    }
+
+    UNSAFE_componentWillReceiveProps(props){
+        // if(prop.)
+        // this.props.navigate('DealerHome')
+        let data = props.dealerState
+        //console.log("data : ", (data.dealer || {}).token);
+        const token = (data.dealer || {}).token
+        if (token) {
+            AsyncStorage.setItem('dealer', JSON.stringify(data.dealer));
+            this.props.navigation.navigate('DealerHome');
+        } 
     }
 
     _handleEmailChange = email => {

@@ -1,9 +1,11 @@
 import React, { Component } from "react";
-import { View, Text, Container, Content, Card, CardItem, Body, ListItem, Separator, Thumbnail, Button, Form, Item, Label, Input } from "native-base";
-import { Collapse, CollapseHeader, CollapseBody } from "accordion-collapse-react-native";
+import { View, Text, Separator, Button, Form, Item, Label, Input } from "native-base";
 import { StyleSheet } from "react-native";
 import AccordionList from "accordion-collapse-react-native/build/components/AccordionList";
-import { TextInput } from "react-native-gesture-handler";
+import { connect } from 'react-redux';
+import { delearAction } from "../../actions/action";
+import Loader from "../loader";
+import AsyncStorage from '@react-native-community/async-storage';
 
 class DealerVegetables extends Component {
 
@@ -29,6 +31,25 @@ class DealerVegetables extends Component {
         }
       ]
     };
+  }
+  
+  UNSAFE_componentWillMount() {
+    AsyncStorage.getItem('dealer', (error, result) => {
+      if (result)
+      {
+        //console.log("In will mount : ", JSON.parse(result));
+        const dealer = JSON.parse(result);
+        if (dealer && dealer.token) {
+          let email = (dealer.dealer || {}).email;
+          const dealerEmail = {
+            email: email
+          };
+          this.props.getDealerVegetables(dealerEmail, dealer.token);
+        }
+      } else {
+        this.props.navigation.navigate('DealerLogin');
+      }
+    });
   }
 
   _head(item) {
@@ -58,12 +79,15 @@ class DealerVegetables extends Component {
   render() {
     
     return (
-
-      <AccordionList
-        list = { this.state.data }
-        header = { this._head }
-        body = { this._body }
-      />
+      <View>
+        <Loader loadingState = { this.props.loaderState } />
+        
+        <AccordionList
+          list = { this.state.data }
+          header = { this._head }
+          body = { this._body }
+        />
+      </View>
     );
   }
 }
@@ -79,4 +103,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DealerVegetables;
+const mapStateToProps = (state) => {
+  return {
+    loaderState: state.loaderState,
+  };
+}
+
+const mapDispatchToProps = dispatch => ({
+  getDealerVegetables: (dealerEmail, token) => dispatch(delearAction.getDealerVegetables(dealerEmail.email, token))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps) (DealerVegetables);

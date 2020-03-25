@@ -5,26 +5,46 @@ import DealerVegetables from "./Vegetables";
 import DealerProfile from "./Profile";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSignOutAlt, faSeedling, faUser } from '@fortawesome/free-solid-svg-icons'
+import { connect } from "react-redux";
+import { delearAction } from "../../actions/action";
+import AsyncStorage from "@react-native-community/async-storage";
 
 class DealerHome extends Component {
-    
 
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => {
+
+        return {
         headerLeft: () => null,
         headerRight: () => (
-            <Button transparent>
+            <Button transparent onPress = { navigation.getParam('logout') }>
                 <FontAwesomeIcon icon = { faSignOutAlt } size = { 20 }></FontAwesomeIcon>
                 <Text>Logout</Text>
             </Button>
-        )
+        ),
+        };
     };
+
+    componentDidMount() {
+        this.props.navigation.setParams( { logout: this._logout } );
+    }
+    
+    UNSAFE_componentWillReceiveProps(props) {
+        //console.log("In dealer home component will receive props : ", props.dealerState);
+        const dealer = (props.dealerState || {}).dealer;
+        console.log("dealer : ", dealer)
+        if (!dealer) {
+            props.navigation.navigate('DealerLogin');
+        }
+    }
+
+    _logout = () => {
+        //console.log("In _logout()", this.props);
+        this.props.logout();
+    }
 
     render() {
         return (
             <Container>
-                <View>
-                    <Text> { this.props.dealer.email } </Text>
-                </View>
                 <Header style = { styles.tabHeader } hasTabs />
                 <Tabs>
                     <Tab heading = { <TabHeading><FontAwesomeIcon icon={ faSeedling } size = { 25 } /><Text>Vegetables</Text></TabHeading>}>
@@ -47,8 +67,13 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-    const { dealer } = state;
-    return { dealer };
+    return {
+        dealerState: state.dealerState
+    }
 }
 
-export default DealerHome;
+const mapDispatchToProps = dispatch => ({
+    logout : () => dispatch(delearAction.logout())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps) (DealerHome);
