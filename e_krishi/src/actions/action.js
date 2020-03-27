@@ -72,7 +72,7 @@ function getDealerVegetables(email, token) {
     return dispatch => {
         dispatch(serviceActionPending);
         //setTimeout(5);
-        //onsole.log(token);
+        //console.log(email);
         let apiendpoint = getDealerVegetablesUrl;
         let payload = email;
         let header = {
@@ -81,10 +81,11 @@ function getDealerVegetables(email, token) {
         };
         userService.POST(apiendpoint, header, payload)
             .then(response => {
-                if (response.message.includes("401")) {
-                    console.log("heelo")
+                //console.log("Get dealer vegetables res : ", response.data);
+                if (response.message !== undefined && response.message.includes("401")) {
                     dispatch(logout());
                 }
+                dispatch(showSuccessResponse(response.data));
             })
             .catch(error => {
                 console.log("error :" ,error)
@@ -103,7 +104,7 @@ function logout() {
             .then(response => {
                 // console.log(response.data);
                 if (response.data === "Logout Successful") {
-                    console.log(response.data);
+                    //console.log(response.data);
                     AsyncStorage.removeItem('dealer');
                     dispatch(showLogoutSuccess(response.data));
                 }

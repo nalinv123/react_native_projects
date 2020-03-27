@@ -12,27 +12,10 @@ class DealerVegetables extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: 
-      [
-        {
-          id: "1",
-          title: "one",
-          content: "hello"
-        },
-        {
-          id: "2",
-          title: "two",
-          content: "bye"
-        },
-        {
-          id: "3",
-          title: "three",
-          content: "goog"
-        }
-      ]
+      data: []
     };
   }
-  
+
   UNSAFE_componentWillMount() {
     AsyncStorage.getItem('dealer', (error, result) => {
       if (result)
@@ -52,21 +35,34 @@ class DealerVegetables extends Component {
     });
   }
 
+  UNSAFE_componentWillReceiveProps(props) {
+    //console.log("vegetables props : ", props)
+    let dealerVegetables = ( props.dealerState.dealer || {}).dealerVegetables;
+    //console.log("vegetables props : ", dealerVegetables)
+    this.setState({
+      data: this._addKeysToVegetables(dealerVegetables)
+    })
+  }
+
   _head(item) {
+    //console.log(item)
     return (
       <Separator bordered style = {{ alignItems: "center" }}>
-        <Text>{ item.title }</Text>
+        <Text>{ item.vegetables.name }</Text>
       </Separator>
     );
   }
 
   _body(item) {
+    //console.log(item);
     return (
       <View style = {{ padding: 10, flex: 1, flexDirection: "column" }}>
         <Form>
           <Item floatingLabel last>
             <Label>Price</Label>
-            <Input />
+            <Input
+              value = { item.price }
+            />
           </Item>
           <Button style = { styles.addButton }>
             <Text>Add</Text>
@@ -75,13 +71,21 @@ class DealerVegetables extends Component {
       </View>
     );
   }
-  
+
+  _addKeysToVegetables = vegetables => {
+    //console.log(vegetables)
+    return vegetables.map(vegetable => {
+      return Object.assign(vegetable, { key: vegetable.vegetables.name });
+    });
+  }
+
   render() {
-    
+    //console.log("In vegetables render state ", this.state.demo)
+    //console.log("In vegetables render props ", this.props.dealerState)
     return (
       <View>
         <Loader loadingState = { this.props.loaderState } />
-        
+
         <AccordionList
           list = { this.state.data }
           header = { this._head }
@@ -105,12 +109,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
+    dealerState: state.dealerState,
     loaderState: state.loaderState,
   };
 }
 
 const mapDispatchToProps = dispatch => ({
-  getDealerVegetables: (dealerEmail, token) => dispatch(delearAction.getDealerVegetables(dealerEmail.email, token))
+  getDealerVegetables: (dealerEmail, token) => dispatch(delearAction.getDealerVegetables(dealerEmail, token))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps) (DealerVegetables);

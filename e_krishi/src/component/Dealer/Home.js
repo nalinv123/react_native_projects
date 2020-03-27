@@ -31,7 +31,7 @@ class DealerHome extends Component {
     UNSAFE_componentWillReceiveProps(props) {
         //console.log("In dealer home component will receive props : ", props.dealerState);
         const dealer = (props.dealerState || {}).dealer;
-        console.log("dealer : ", dealer)
+        // console.log("dealer : ", dealer)
         if (!dealer) {
             props.navigation.navigate('DealerLogin');
         }

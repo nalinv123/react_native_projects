@@ -13,7 +13,7 @@ const INITIAL_STATE = {
 } */
 
 export function dealerState (state = INITIAL_STATE, action) {
-    console.log("action after logout",action.payload)
+    //console.log("action after logout",action.payload)
     // const name = (action.payload || {}).token;
     // console.log("name : ", name)
     switch(action.type) {
@@ -23,7 +23,7 @@ export function dealerState (state = INITIAL_STATE, action) {
                 dealer: action.payload
             };
         case LOGOUT_SUCCESS:
-            console.log("logout success action");
+            //console.log("logout success action");
             return {
                 ...state,
                 dealer: null
