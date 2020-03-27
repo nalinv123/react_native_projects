@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { delearAction } from "../../actions/action";
 import Loader from "../loader";
 import AsyncStorage from '@react-native-community/async-storage';
+import ValidationError from "../ValidationError";
 
 class DealerVegetables extends Component {
 
@@ -39,9 +40,11 @@ class DealerVegetables extends Component {
     //console.log("vegetables props : ", props)
     let dealerVegetables = ( props.dealerState.dealer || {}).dealerVegetables;
     //console.log("vegetables props : ", dealerVegetables)
-    this.setState({
-      data: this._addKeysToVegetables(dealerVegetables)
-    })
+    if (dealerVegetables !== undefined && dealerVegetables.length !== 0) {
+      this.setState({
+        data: this._addKeysToVegetables(dealerVegetables)
+      })
+    }
   }
 
   _head(item) {
@@ -82,28 +85,39 @@ class DealerVegetables extends Component {
   render() {
     //console.log("In vegetables render state ", this.state.demo)
     //console.log("In vegetables render props ", this.props.dealerState)
+    let noVegetablesNotice;
+    if ( this.state.data.length === 0 ) {
+      noVegetablesNotice = <ValidationError Error = "You have not added any vegetable. Please click on Add to add the vegetable." />
+    }
+
     return (
-      <View>
+      <View style = { styles.container }>
         <Loader loadingState = { this.props.loaderState } />
+
+        <View>{ noVegetablesNotice }</View>
 
         <AccordionList
           list = { this.state.data }
           header = { this._head }
           body = { this._body }
         />
+        
+        <Button style = { styles.addButton }>
+          <Text>
+            Add New vegetable
+          </Text>
+        </Button>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    addButton: {
-      margin: 20
+  container: {
+    flexDirection: "column"
+  },
+  addButton: {
+    margin: 20
   },
 });
 
