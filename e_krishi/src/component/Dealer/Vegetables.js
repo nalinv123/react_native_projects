@@ -15,6 +15,7 @@ class DealerVegetables extends Component {
     this.state = {
       data: []
     };
+    this._updateVegetablePrice = this._updateVegetablePrice.bind(this)
   }
 
   UNSAFE_componentWillMount() {
@@ -67,8 +68,8 @@ class DealerVegetables extends Component {
               value = { item.price }
             />
           </Item>
-          <Button style = { styles.addButton }>
-            <Text>Add</Text>
+          <Button style = { styles.addButton } onPress = { this._updateVegetablePrice(item) }>
+            <Text>Update</Text>
           </Button>
         </Form>
       </View>
@@ -82,9 +83,11 @@ class DealerVegetables extends Component {
     });
   }
 
+  _updateVegetablePrice = vegetable => {
+    console.log(vegetable)
+  }
+
   render() {
-    //console.log("In vegetables render state ", this.state.demo)
-    //console.log("In vegetables render props ", this.props.dealerState)
     let noVegetablesNotice;
     if ( this.state.data.length === 0 ) {
       noVegetablesNotice = <ValidationError Error = "You have not added any vegetable. Please click on Add to add the vegetable." />
